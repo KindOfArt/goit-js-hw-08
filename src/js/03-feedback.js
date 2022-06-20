@@ -18,6 +18,8 @@ populateFormFields();
 function onFormSubmit(e) {
   e.preventDefault();
 
+  localStorage.removeItem(FEEDBACK_FORM_STATE);
+
   const email = e.target.elements.email.value;
   const message = e.target.elements.message.value;
   formData.email = email;
@@ -26,8 +28,6 @@ function onFormSubmit(e) {
   console.log(formData);
 
   e.currentTarget.reset();
-
-  localStorage.removeItem(FEEDBACK_FORM_STATE);
 }
 function onInputEmail(e) {
   const email = e.target.value;
