@@ -17,8 +17,6 @@ const gallery = new SimpleLightbox('.gallery  a', {
   captionDelay: 250,
 });
 
-galleryRef.addEventListener('click', onGalleryImageClick);
-
 function createGalleryMurkup(gallery) {
   return gallery
     .map(image => {
@@ -29,16 +27,4 @@ function createGalleryMurkup(gallery) {
         `;
     })
     .join('');
-}
-
-function onGalleryImageClick(e) {
-  e.preventDefault();
-
-  const imageEl = e.target.nodeName;
-
-  if (!imageEl) {
-    return;
-  } else {
-    gallery;
-  }
 }

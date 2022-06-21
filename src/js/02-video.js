@@ -7,8 +7,11 @@ const iframe = document.querySelector('#vimeo-player');
 const player = new Player(iframe);
 const getSavedTime = localStorage.getItem(VIDEOPLAYER_CURRENT_TIME);
 
+if (getSavedTime) {
+  player.setCurrentTime(getSavedTime);
+}
+
 player.on('timeupdate', throttle(onTimeUpdate, 1000));
-player.setCurrentTime(getSavedTime);
 
 function onTimeUpdate(time) {
   let savedPausedPlayerTime = time.seconds;
