@@ -1,54 +1,48 @@
 import throttle from 'lodash.throttle';
 
-const refs = {
-  form: document.querySelector('.feedback-form'),
-  email: document.querySelector('.feedback-form input[name = email]'),
-  textarea: document.querySelector('.feedback-form textarea'),
-};
+const FEEDBACK_FORM_KEY = 'feedback-form-state';
+const formRef = document.querySelector('.feedback-form');
 
-const FEEDBACK_FORM_STATE = 'feedback-form-state';
-let feedbackFormData = {
-  email: '',
-  message: '',
-};
+initForm();
 
-refs.form.addEventListener('input', onFormInput);
-refs.form.addEventListener('submit', onFormSubmit);
+formRef.addEventListener('input', throttle(onInputForm, 500));
 
-populateFormFields();
-
-function onFormSubmit(e) {
+formRef.addEventListener('submit', e => {
   e.preventDefault();
 
   if (
-    feedbackFormData.email.length === 0 ||
-    feedbackFormData.message.length === 0
+    e.target.elements.email.value !== '' &&
+    e.target.elements.message.value !== ''
   ) {
-    alert('All areas must be filled');
+    const formData = new FormData(formRef);
+
+    formData.forEach((value, name) => console.log(`${name}: ${value}`));
+
+    localStorage.removeItem(FEEDBACK_FORM_KEY);
+    formRef.reset();
+  } else {
+    alert('need to fiil all fields');
   }
-  if (
-    feedbackFormData.email.length > 0 &&
-    feedbackFormData.message.length > 0
-  ) {
-    console.log(feedbackFormData);
-    refs.form.reset();
-    localStorage.removeItem(FEEDBACK_FORM_STATE);
-  }
+});
+
+function onInputForm(e) {
+  let savedForm = localStorage.getItem(FEEDBACK_FORM_KEY);
+
+  savedForm = savedForm ? JSON.parse(savedForm) : {};
+
+  savedForm[e.target.name] = e.target.value;
+
+  localStorage.setItem(FEEDBACK_FORM_KEY, JSON.stringify(savedForm));
 }
 
-function onFormInput(e) {
-  feedbackFormData[e.target.name] = e.target.value;
+function initForm() {
+  let savedForm = localStorage.getItem(FEEDBACK_FORM_KEY);
 
-  localStorage.setItem(FEEDBACK_FORM_STATE, JSON.stringify(feedbackFormData));
-}
+  if (savedForm) {
+    savedForm = JSON.parse(savedForm);
 
-function populateFormFields() {
-  const savedFeedback = JSON.parse(localStorage.getItem(FEEDBACK_FORM_STATE));
-
-  if (savedFeedback) {
-    feedbackFormData = { ...savedFeedback };
-
-    refs.email.value = feedbackFormData.email;
-    refs.textarea.value = feedbackFormData.message;
+    Object.entries(savedForm).forEach(([name, value]) => {
+      formRef.elements[name].value = value;
+    });
   }
 }
